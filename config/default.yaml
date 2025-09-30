@@ -1,0 +1,21 @@
+sampling:
+  rows: 100
+  encoding: "utf-8"
+
+chunking:
+  columns_per_chunk: 20
+  parallel_requests: true
+
+llm:
+  provider: "gemini"
+  model: "gemini-2.5-pro"
+  timeout: 30
+  retry_attempts: 3
+  retry_delay: 5
+
+database:
+  connection_template: "postgresql://{user}:{password}@{host}:{port}/{dbname}"
+
+output:
+  directory: "./output"
+  dry_run: false

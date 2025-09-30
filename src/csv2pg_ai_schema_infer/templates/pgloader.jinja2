@@ -1,0 +1,33 @@
+LOAD CSV
+    FROM '{{ csv_path }}'
+    INTO {{ database_url }}
+    TARGET TABLE {{ table_name }}
+
+    WITH
+        truncate,
+        skip header = 1,
+        fields optionally enclosed by '"',
+        fields escaped by double-quote,
+        fields terminated by '{{ delimiter }}'
+
+    SET
+        work_mem to '256MB',
+        maintenance_work_mem to '512MB'
+
+    BEFORE LOAD DO
+    $$ DROP TABLE IF EXISTS {{ table_name }}; $$,
+    $$ CREATE TABLE {{ table_name }} (
+        {%- for column in columns %}
+        {{ column.name }} {{ column.pg_type }}{% if not column.nullable %} NOT NULL{% endif %}{% if column.constraints %} {{ column.constraints|join(' ') }}{% endif %}{% if not loop.last %},{% endif %}
+        {%- endfor %}
+    ); $$
+
+    {%- if cast_columns %}
+
+    CAST
+        {%- for column in cast_columns %}
+        {{ column.name }} to {{ column.pg_type }}{% if column.cast_rule %} using {{ column.cast_rule }}{% endif %}{% if not loop.last %},{% endif %}
+        {%- endfor %}
+    {%- endif %}
+
+;

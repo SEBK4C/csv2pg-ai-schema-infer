@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          uv sync --extra dev
+
+      - name: Run tests
+        run: |
+          uv run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv sync --extra dev
+
+      - name: Run ruff (lint)
+        run: |
+          uv run ruff check src/ tests/
+
+      - name: Run ruff (format check)
+        run: |
+          uv run ruff format --check src/ tests/
+
+      - name: Run mypy (type checking)
+        run: |
+          uv run mypy src/
+        continue-on-error: true
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    # Only run integration tests on main branch
+    if: github.ref == 'refs/heads/main'
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: csv2pg_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv sync --extra dev
+
+      - name: Install pgloader
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pgloader
+
+      - name: Run integration tests
+        env:
+          TEST_DB_URL: postgresql://test:test@localhost:5432/csv2pg_test
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_TEST }}
+        run: |
+          uv run pytest tests/integration/ -v --maxfail=1
+        continue-on-error: true
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-artifacts
+          path: |
+            output/
+            *.log

@@ -1,0 +1,1 @@
+"""Tests for CSV2PG AI Schema Infer."""

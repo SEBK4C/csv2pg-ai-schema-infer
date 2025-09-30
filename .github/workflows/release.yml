@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv sync --extra dev
+
+      - name: Run tests
+        run: |
+          uv run pytest tests/ --cov=src
+
+      - name: Build package
+        run: |
+          uv build
+
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Create release notes
+          cat > release_notes.md <<EOF
+          ## csv2pg-ai-schema-infer v$VERSION
+
+          ### Installation
+
+          \`\`\`bash
+          git clone https://github.com/SEBK4C/csv2pg-ai-schema-infer.git
+          cd csv2pg-ai-schema-infer
+          git checkout v$VERSION
+          uv sync
+          \`\`\`
+
+          ### What's New
+
+          See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+
+          ### Full Changelog
+
+          https://github.com/SEBK4C/csv2pg-ai-schema-infer/compare/v${{ github.event.before }}...v$VERSION
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
+          files: |
+            dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
