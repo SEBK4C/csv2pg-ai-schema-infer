@@ -1,7 +1,6 @@
 """Logging configuration for CSV2PG AI Schema Infer."""
 
 import logging
-import sys
 from pathlib import Path
 from typing import Any
 

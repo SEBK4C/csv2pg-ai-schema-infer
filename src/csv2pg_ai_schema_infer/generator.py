@@ -1,10 +1,9 @@
 """Configuration and script generation module."""
 
-import os
 from datetime import datetime
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import Environment, FileSystemLoader
 
 from .types import GenerationResult, TableSchema
 from .utils.logger import logger

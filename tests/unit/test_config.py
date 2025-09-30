@@ -1,11 +1,8 @@
 """Tests for configuration module."""
 
-import os
 from pathlib import Path
 
-import pytest
-
-from csv2pg_ai_schema_infer.config import Config, load_config
+from csv2pg_ai_schema_infer.config import Config
 
 
 def test_default_config():

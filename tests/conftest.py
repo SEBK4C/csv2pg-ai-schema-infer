@@ -1,7 +1,5 @@
 """Shared test fixtures for CSV2PG AI Schema Infer tests."""
 
-import tempfile
-from pathlib import Path
 
 import pytest
 

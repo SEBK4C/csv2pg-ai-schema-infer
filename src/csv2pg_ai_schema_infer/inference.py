@@ -2,15 +2,12 @@
 
 import asyncio
 import re
-from datetime import datetime
-from typing import Any
 
 from .chunker import chunk_columns, chunk_columns_smart
 from .llm.base import LLMProvider
 from .types import (
-    ColumnChunk,
-    ColumnSchema,
     ColumnSample,
+    ColumnSchema,
     ConfidenceLevel,
     CSVSample,
     InferredType,
@@ -93,7 +90,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
 
     # Decimal/numeric pattern
     try:
-        float_values = [float(v) for v in str_values]
+        [float(v) for v in str_values]
         return InferredType(
             column_name=column.name,
             pg_type="numeric",

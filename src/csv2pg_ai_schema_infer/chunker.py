@@ -1,6 +1,5 @@
 """Column chunking module for processing wide CSVs."""
 
-from typing import Any
 
 from .sampler import sample_csv_columns
 from .types import ColumnChunk, CSVSample

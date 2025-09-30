@@ -1,6 +1,5 @@
 """Tests for column chunker module."""
 
-import pytest
 
 from csv2pg_ai_schema_infer.chunker import chunk_columns, chunk_columns_smart
 from csv2pg_ai_schema_infer.sampler import sample_csv

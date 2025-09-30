@@ -1,7 +1,6 @@
 """Command-line interface for CSV2PG AI Schema Infer."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -35,7 +34,7 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-v",
@@ -57,13 +56,13 @@ def import_csv(
     chunk_size: int = typer.Option(
         20, "--chunk-size", "-c", help="Columns per chunk for LLM processing"
     ),
-    db_url: Optional[str] = typer.Option(
+    db_url: str | None = typer.Option(
         None, "--db-url", "-d", help="PostgreSQL connection URL"
     ),
-    table_name: Optional[str] = typer.Option(
+    table_name: str | None = typer.Option(
         None, "--table-name", "-t", help="Target table name (default: CSV filename)"
     ),
-    output_dir: Optional[Path] = typer.Option(
+    output_dir: Path | None = typer.Option(
         None, "--output-dir", "-o", help="Output directory (default: ./output)"
     ),
     dry_run: bool = typer.Option(
@@ -256,14 +255,14 @@ def validate(
         if sample.properties.row_count:
             console.print(f"✓ Total rows: [cyan]{sample.properties.row_count:,}[/cyan]")
 
-        console.print(f"\n[bold]Headers:[/bold]\n")
+        console.print("\n[bold]Headers:[/bold]\n")
         for i, header in enumerate(sample.headers[:20], 1):
             console.print(f"  {i}. {header}")
         if len(sample.headers) > 20:
             console.print(f"  ... and {len(sample.headers) - 20} more")
 
         if show_sample:
-            console.print(f"\n[bold]Sample Data (first 5 rows):[/bold]\n")
+            console.print("\n[bold]Sample Data (first 5 rows):[/bold]\n")
             table = Table(show_header=True, header_style="bold magenta")
             for header in sample.headers[:10]:  # Show first 10 columns
                 table.add_column(header, overflow="fold", max_width=20)
