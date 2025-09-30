@@ -1,0 +1,1035 @@
+====================================================================================================
+SCHEMA COMPARISON REPORT: Gemini AI vs Reference
+====================================================================================================
+
+⚠️  EXTRA: acquirer_identifier.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: acquirer_identifier.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: acquirer_identifier.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: acquirer_identifier.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid
+
+⚠️  EXTRA: acquirer_identifier.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: acquirer_identifier_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: acquirer_identifier_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: acquirer_identifier_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: acquirer_identifier_uuid
+   Reference: uuid
+   Inferred:  NOT FOUND
+
+❌ MISSING: acquirer_identifier_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: aliases
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: categories.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: categories.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: categories.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: categories.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid[]
+
+⚠️  EXTRA: categories.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+❌ MISSING: categories_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: categories_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: categories_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: categories_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: categories_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: category_groups.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: category_groups.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: category_groups.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: category_groups.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: category_groups.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: category_groups_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: category_groups_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: category_groups_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: category_groups_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: category_groups_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: closed_on.precision
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: closed_on.value
+   Reference: NOT IN REFERENCE
+   Inferred:  date
+
+❌ MISSING: closed_on_precision
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: closed_on_value
+   Reference: date
+   Inferred:  NOT FOUND
+
+✅ MATCH: company_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: contact_email
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: created_at
+   Reference: timestamptz
+   Inferred:  timestamptz
+   Reason:    Exact match
+
+⚠️  EXTRA: delisted_on.precision
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: delisted_on.value
+   Reference: NOT IN REFERENCE
+   Inferred:  date
+
+❌ MISSING: delisted_on_precision
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: delisted_on_value
+   Reference: date
+   Inferred:  NOT FOUND
+
+✅ MATCH: demo_days
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: description
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: diversity_spotlights.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: diversity_spotlights.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: diversity_spotlights.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: diversity_spotlights.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: diversity_spotlights.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: diversity_spotlights_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: diversity_spotlights_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: diversity_spotlights_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: diversity_spotlights_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: diversity_spotlights_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: equity_funding_total.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(3)
+
+⚠️  EXTRA: equity_funding_total.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: equity_funding_total.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: equity_funding_total_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: equity_funding_total_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: equity_funding_total_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: exited_on.precision
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: exited_on.value
+   Reference: NOT IN REFERENCE
+   Inferred:  date
+
+❌ MISSING: exited_on_precision
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: exited_on_value
+   Reference: date
+   Inferred:  NOT FOUND
+
+✅ MATCH: facebook
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: founded_on.precision
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: founded_on.value
+   Reference: NOT IN REFERENCE
+   Inferred:  date
+
+❌ MISSING: founded_on_precision
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: founded_on_value
+   Reference: date
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: founder_identifiers.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: founder_identifiers.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: founder_identifiers.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: founder_identifiers.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: founder_identifiers.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: founder_identifiers_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: founder_identifiers_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: founder_identifiers_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: founder_identifiers_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: founder_identifiers_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: funding_stage
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: funding_total.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(3)
+
+⚠️  EXTRA: funding_total.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: funding_total.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: funding_total_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: funding_total_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: funding_total_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: funds_total.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(3)
+
+⚠️  EXTRA: funds_total.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: funds_total.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: funds_total_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: funds_total_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: funds_total_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+✅ MATCH: growth_insight_confidence
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: growth_insight_direction
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: growth_score
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: growth_score_delta_d90
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: heat_score
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: heat_score_delta_d90
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: hub_tags
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: identifier.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(50)
+
+⚠️  EXTRA: identifier.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: identifier.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(255)
+
+⚠️  EXTRA: identifier.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid
+
+⚠️  EXTRA: identifier.value
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(255)
+
+❌ MISSING: identifier_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: identifier_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: identifier_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: identifier_uuid
+   Reference: uuid
+   Inferred:  NOT FOUND
+
+❌ MISSING: identifier_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: image_url
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: investor_identifiers.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: investor_identifiers.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: investor_identifiers.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: investor_identifiers.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: investor_identifiers.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: investor_identifiers_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: investor_identifiers_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: investor_identifiers_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: investor_identifiers_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: investor_identifiers_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: investor_stage
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: investor_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: ipo_status
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: last_equity_funding_total.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(3)
+
+⚠️  EXTRA: last_equity_funding_total.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: last_equity_funding_total.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: last_equity_funding_total_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: last_equity_funding_total_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: last_equity_funding_total_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+✅ MATCH: last_equity_funding_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: last_funding_at
+   Reference: date
+   Inferred:  date
+   Reason:    Exact match
+
+⚠️  EXTRA: last_funding_total.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(3)
+
+⚠️  EXTRA: last_funding_total.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: last_funding_total.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: last_funding_total_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: last_funding_total_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: last_funding_total_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+✅ MATCH: last_funding_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: last_key_employee_change_date
+   Reference: date
+   Inferred:  date
+   Reason:    Exact match
+
+✅ MATCH: last_layoff_date
+   Reference: date
+   Inferred:  date
+   Reason:    Exact match
+
+✅ MATCH: layout_id
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: legal_name
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: linkedin
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: listed_stock_symbol
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: location_group_identifiers.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_group_identifiers.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_group_identifiers.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_group_identifiers.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid[]
+
+⚠️  EXTRA: location_group_identifiers.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: location_group_identifiers_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_group_identifiers_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_group_identifiers_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_group_identifiers_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_group_identifiers_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+⚠️  EXTRA: location_identifiers.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_identifiers.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_identifiers.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+⚠️  EXTRA: location_identifiers.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid[]
+
+⚠️  EXTRA: location_identifiers.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text[]
+
+❌ MISSING: location_identifiers_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_identifiers_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_identifiers_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_identifiers_uuid
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: location_identifiers_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: name
+   Reference: text
+   Inferred:  varchar(255)
+   Reason:    Compatible text types
+
+✅ MATCH: num_acquisitions
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_alumni
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_articles
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_current_advisor_positions
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_current_positions
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_diversity_spotlight_investments
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_employees_enum
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: num_enrollments
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_event_appearances
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_exits
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_exits_ipo
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_founder_alumni
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_founders
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_funding_rounds
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_funds
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_investments
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_investors
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_lead_investments
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_lead_investors
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_past_positions
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_portfolio_organizations
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: num_sub_organizations
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: operating_status
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: owner_identifier.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: owner_identifier.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: owner_identifier.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: owner_identifier.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid
+
+⚠️  EXTRA: owner_identifier.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: owner_identifier_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: owner_identifier_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: owner_identifier_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: owner_identifier_uuid
+   Reference: uuid
+   Inferred:  NOT FOUND
+
+❌ MISSING: owner_identifier_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: permalink_aliases
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: phone_number
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+❌ MISMATCH: program_application_deadline
+   Reference: text
+   Inferred:  date
+   Reason:    Type mismatch: date vs text
+
+❌ MISMATCH: program_duration
+   Reference: integer
+   Inferred:  text
+   Reason:    Type mismatch: text vs integer
+
+✅ MATCH: program_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: rank
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: rank_delta_d30
+   Reference: numeric
+   Inferred:  double precision
+   Reason:    Compatible decimal types
+
+❌ MISMATCH: rank_delta_d7
+   Reference: integer
+   Inferred:  double precision
+   Reason:    Type mismatch: double precision vs integer
+
+❌ MISMATCH: rank_delta_d90
+   Reference: integer
+   Inferred:  double precision
+   Reason:    Type mismatch: double precision vs integer
+
+✅ MATCH: rank_org
+   Reference: integer
+   Inferred:  integer
+   Reason:    Exact match
+
+✅ MATCH: revenue_range
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: school_method
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: school_program
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: school_type
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: short_description
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: status
+   Reference: text
+   Inferred:  varchar(50)
+   Reason:    Compatible text types
+
+✅ MATCH: stock_exchange_symbol
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+⚠️  EXTRA: stock_symbol.entity_def_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: stock_symbol.image_id
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: stock_symbol.permalink
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+⚠️  EXTRA: stock_symbol.uuid
+   Reference: NOT IN REFERENCE
+   Inferred:  uuid
+
+⚠️  EXTRA: stock_symbol.value
+   Reference: NOT IN REFERENCE
+   Inferred:  text
+
+❌ MISSING: stock_symbol_entity_def_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: stock_symbol_image_id
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: stock_symbol_permalink
+   Reference: text
+   Inferred:  NOT FOUND
+
+❌ MISSING: stock_symbol_uuid
+   Reference: uuid
+   Inferred:  NOT FOUND
+
+❌ MISSING: stock_symbol_value
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: twitter
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: updated_at
+   Reference: timestamptz
+   Inferred:  timestamptz
+   Reason:    Exact match
+
+⚠️  EXTRA: valuation.currency
+   Reference: NOT IN REFERENCE
+   Inferred:  varchar(10)
+
+⚠️  EXTRA: valuation.value
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+⚠️  EXTRA: valuation.value_usd
+   Reference: NOT IN REFERENCE
+   Inferred:  numeric
+
+❌ MISSING: valuation_currency
+   Reference: text
+   Inferred:  NOT FOUND
+
+✅ MATCH: valuation_date
+   Reference: date
+   Inferred:  date
+   Reason:    Exact match
+
+❌ MISSING: valuation_value
+   Reference: bigint
+   Inferred:  NOT FOUND
+
+❌ MISSING: valuation_value_usd
+   Reference: numeric
+   Inferred:  NOT FOUND
+
+✅ MATCH: website
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: website_url
+   Reference: text
+   Inferred:  text
+   Reason:    Exact match
+
+✅ MATCH: went_public_on
+   Reference: date
+   Inferred:  date
+   Reason:    Exact match
+
+====================================================================================================
+SUMMARY
+====================================================================================================
+Total Columns:   237
+✅ Matches:      71 (30.0%)
+❌ Mismatches:   4 (1.7%)
+⚠️  Missing:      162 (68.4%)
+====================================================================================================

@@ -1,15 +1,27 @@
 """Google Gemini LLM provider implementation."""
 
 import asyncio
-import json
 import time
 
 import google.generativeai as genai
+from google.generativeai.types import GenerationConfig
+from pydantic import BaseModel, Field
 
-from ..types import ColumnChunk, InferredType
+from ..types import ColumnChunk, InferredType, ConfidenceLevel
 from ..utils.logger import logger
-from ..utils.validation import validate_inferred_type
 from .base import LLMProvider
+
+
+# Simplified schema for API (without defaults that Gemini doesn't support)
+class InferredTypeAPI(BaseModel):
+    """Simplified InferredType for Gemini API (no defaults)."""
+    column_name: str
+    pg_type: str
+    confidence: str  # Use string instead of enum for API
+    reasoning: str
+    nullable: bool
+    constraints: list[str]
+    cast_rule: str | None
 
 
 class GeminiProvider(LLMProvider):
@@ -49,9 +61,11 @@ class GeminiProvider(LLMProvider):
         logger.debug(f"Initialized Gemini provider with model: {model}")
 
     def _build_prompt(self, chunk: ColumnChunk) -> str:
-        """Build prompt for type inference."""
-        # Format sample data
-        sample_str = json.dumps(chunk.sample_data[:20], indent=2)  # Limit to 20 rows
+        """Build prompt for type inference using structured output."""
+        import json
+
+        # Format sample data (limit to 20 rows for token efficiency)
+        sample_str = json.dumps(chunk.sample_data[:20], indent=2)
 
         prompt = f"""You are a PostgreSQL database schema expert. Analyze these CSV columns and suggest optimal PostgreSQL data types.
 
@@ -60,83 +74,47 @@ Columns to analyze: {', '.join(chunk.columns)}
 Sample data (first 20 rows):
 {sample_str}
 
-For each column, analyze the data and determine:
-1. The most appropriate PostgreSQL type
-2. Whether the column should be nullable
-3. Any constraints (PRIMARY KEY, UNIQUE, etc.)
-4. Your reasoning
-
-Return a JSON array with this exact structure:
-[
-  {{
-    "column_name": "column_name_here",
-    "postgresql_type": "postgresql_type_here",
-    "confidence": "high|medium|low",
-    "reasoning": "brief explanation",
-    "nullable": true|false,
-    "constraints": ["CONSTRAINT1", "CONSTRAINT2"],
-    "cast_rule": null
-  }}
-]
+For each column, determine:
+1. The most appropriate PostgreSQL type (use exact type names)
+2. Whether the column should be nullable (true/false)
+3. Confidence level in your assessment (HIGH, MEDIUM, or LOW)
+4. Brief reasoning for your type choice
+5. Any constraints if applicable
+6. Cast rule if needed (usually null)
 
 PostgreSQL type guidelines:
-- Use INTEGER for small whole numbers, BIGINT for large ones
-- Use NUMERIC(precision, scale) for decimals requiring exact precision
-- Use REAL or DOUBLE PRECISION for floating point
-- Use VARCHAR(n) for bounded strings, TEXT for unbounded
-- Use TIMESTAMP WITH TIME ZONE (timestamptz) for timestamps
-- Use DATE for dates without time
-- Use UUID for UUID patterns
-- Use BOOLEAN for true/false values
-- Use JSONB for JSON data
-- Consider NULL percentage when setting nullable
+- Use "integer" for small whole numbers (-2B to 2B), "bigint" for large ones
+- Use "numeric" for decimals requiring exact precision (money, financial data)
+- Use "real" or "double precision" for floating point
+- Use "text" for unbounded strings, "varchar(n)" only if you know the limit
+- Use "timestamptz" for timestamps with timezone
+- Use "date" for dates without time
+- Use "uuid" for UUID patterns
+- Use "boolean" for true/false values
+- Use "jsonb" for JSON data
+- Set nullable=true if any NULL values exist in the sample
 
-Respond ONLY with the JSON array, no additional text."""
+Analyze each column carefully and provide accurate type recommendations."""
 
         return prompt
 
-    def _parse_response(self, response_text: str, chunk: ColumnChunk) -> list[InferredType]:
-        """Parse and validate Gemini response."""
-        try:
-            # Extract JSON from response (handle markdown code blocks)
-            text = response_text.strip()
-            if text.startswith("```json"):
-                text = text[7:]  # Remove ```json
-            if text.startswith("```"):
-                text = text[3:]  # Remove ```
-            if text.endswith("```"):
-                text = text[:-3]
-            text = text.strip()
+    def _validate_response(self, inferred_types: list[InferredType], chunk: ColumnChunk) -> list[InferredType]:
+        """Validate and sanitize the structured response."""
+        # Ensure we have types for all columns
+        if len(inferred_types) != len(chunk.columns):
+            logger.warning(
+                f"Expected {len(chunk.columns)} types, got {len(inferred_types)}"
+            )
 
-            # Parse JSON
-            data = json.loads(text)
-
-            if not isinstance(data, list):
-                raise ValueError("Response must be a JSON array")
-
-            # Validate each type
-            inferred_types = []
-            for item in data:
-                try:
-                    inferred_type = validate_inferred_type(item)
-                    inferred_types.append(inferred_type)
-                except Exception as e:
-                    logger.warning(
-                        f"Failed to validate type for column {item.get('column_name')}: {e}"
-                    )
-
-            # Ensure we have types for all columns
-            if len(inferred_types) != len(chunk.columns):
+        # Log any low confidence types
+        for inferred in inferred_types:
+            if inferred.confidence.value == "LOW":
                 logger.warning(
-                    f"Expected {len(chunk.columns)} types, got {len(inferred_types)}"
+                    f"Low confidence type for column {inferred.column_name}: "
+                    f"{inferred.pg_type} - {inferred.reasoning}"
                 )
 
-            return inferred_types
-
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON response: {e}") from e
-        except Exception as e:
-            raise ValueError(f"Failed to parse response: {e}") from e
+        return inferred_types
 
     async def infer_types(self, chunk: ColumnChunk) -> list[InferredType]:
         """
@@ -154,7 +132,7 @@ Respond ONLY with the JSON array, no additional text."""
 
     def infer_types_sync(self, chunk: ColumnChunk) -> list[InferredType]:
         """
-        Infer types synchronously with retry logic.
+        Infer types synchronously with retry logic using structured output.
 
         Args:
             chunk: Column chunk
@@ -175,14 +153,47 @@ Respond ONLY with the JSON array, no additional text."""
                     f"{chunk.total_chunks} (attempt {attempt + 1})"
                 )
 
-                # Generate response
-                response = self.model.generate_content(prompt)
+                # Use structured output with simplified Pydantic schema
+                generation_config = GenerationConfig(
+                    response_mime_type="application/json",
+                    response_schema=list[InferredTypeAPI],
+                )
+
+                response = self.model.generate_content(
+                    prompt,
+                    generation_config=generation_config,
+                )
 
                 if not response or not response.text:
                     raise ValueError("Empty response from Gemini API")
 
-                # Parse and validate response
-                inferred_types = self._parse_response(response.text, chunk)
+                # Parse the structured JSON response
+                import json
+                response_data = json.loads(response.text)
+
+                # Convert to InferredType objects (with proper enum conversion)
+                inferred_types = []
+                for item in response_data:
+                    # Convert confidence string to enum
+                    confidence_str = item.get("confidence", "MEDIUM").upper()
+                    if confidence_str not in ["HIGH", "MEDIUM", "LOW"]:
+                        confidence_str = "MEDIUM"
+
+                    inferred_types.append(InferredType(
+                        column_name=item["column_name"],
+                        pg_type=item["pg_type"],
+                        confidence=ConfidenceLevel[confidence_str],
+                        reasoning=item["reasoning"],
+                        nullable=item["nullable"],
+                        constraints=item.get("constraints", []),
+                        cast_rule=item.get("cast_rule"),
+                    ))
+
+                if not inferred_types:
+                    raise ValueError("Parsed response is empty")
+
+                # Validate response
+                inferred_types = self._validate_response(inferred_types, chunk)
 
                 logger.info(
                     f"Successfully inferred types for chunk {chunk.chunk_id + 1}/"
