@@ -139,15 +139,18 @@ def sample_csv(
     if encoding:
         properties.encoding = encoding
 
-    # Read sample with polars
+    # Read sample with polars using lazy scan for large files
     try:
-        df = pl.read_csv(
+        # Use scan_csv for lazy reading, then collect only n_rows
+        # This prevents loading the entire file into memory
+        # Convert encoding format for polars (utf-8 -> utf8)
+        polars_encoding = properties.encoding.replace("-", "") if properties.encoding else "utf8"
+        df = pl.scan_csv(
             path,
             separator=properties.delimiter,
-            encoding=properties.encoding,
-            n_rows=n_rows,
+            encoding=polars_encoding,
             ignore_errors=True,
-        )
+        ).head(n_rows).collect()
     except Exception as e:
         raise ValueError(f"Failed to read CSV file: {e}") from e
 
