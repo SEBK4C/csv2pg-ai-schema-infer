@@ -65,6 +65,12 @@ def import_csv(
     output_dir: Path | None = typer.Option(
         None, "--output-dir", "-o", help="Output directory (default: ./output)"
     ),
+    model: str | None = typer.Option(
+        None,
+        "--model",
+        "-m",
+        help="Gemini model: gemini-flash-latest, gemini-pro-latest, gemini-2.5-pro, gemini-flash-lite-latest"
+    ),
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Generate configs without importing"
     ),
@@ -93,6 +99,8 @@ def import_csv(
         config.chunking.columns_per_chunk = chunk_size
     if output_dir:
         config.output.directory = output_dir
+    if model:
+        config.llm.model = model
     if dry_run:
         config.output.dry_run = True
 

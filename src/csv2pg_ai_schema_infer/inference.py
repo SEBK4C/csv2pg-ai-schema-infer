@@ -15,6 +15,64 @@ from .types import (
 )
 from .utils.logger import logger
 
+# PostgreSQL reserved keywords that need prefixing
+POSTGRES_RESERVED_KEYWORDS = {
+    "all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric",
+    "both", "case", "cast", "check", "collate", "column", "constraint", "create",
+    "current_catalog", "current_date", "current_role", "current_time",
+    "current_timestamp", "current_user", "default", "deferrable", "desc", "distinct",
+    "do", "else", "end", "except", "false", "fetch", "for", "foreign", "from",
+    "grant", "group", "having", "in", "initially", "intersect", "into", "lateral",
+    "leading", "limit", "localtime", "localtimestamp", "not", "null", "offset",
+    "on", "only", "or", "order", "placing", "primary", "references", "returning",
+    "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing",
+    "true", "union", "unique", "user", "using", "variadic", "when", "where", "window",
+    "with"
+}
+
+
+def sanitize_column_name(name: str) -> str:
+    """
+    Sanitize column name for PostgreSQL compatibility.
+
+    - Converts to lowercase
+    - Replaces dots and special characters with underscores
+    - Ensures name starts with letter or underscore
+    - Handles PostgreSQL reserved keywords
+
+    Args:
+        name: Original column name
+
+    Returns:
+        Sanitized column name safe for PostgreSQL
+    """
+    # Convert to lowercase
+    name = name.lower()
+
+    # Replace dots and special characters with underscores
+    # Keep only alphanumeric and underscore
+    name = re.sub(r'[^a-z0-9_]', '_', name)
+
+    # Remove consecutive underscores
+    name = re.sub(r'_+', '_', name)
+
+    # Remove leading/trailing underscores
+    name = name.strip('_')
+
+    # Ensure starts with letter or underscore (not digit)
+    if name and name[0].isdigit():
+        name = f'col_{name}'
+
+    # Handle empty names
+    if not name:
+        name = 'unnamed_column'
+
+    # Handle reserved keywords
+    if name in POSTGRES_RESERVED_KEYWORDS:
+        name = f'{name}_col'
+
+    return name
+
 
 def heuristic_type_inference(column: ColumnSample) -> InferredType:
     """
@@ -26,12 +84,15 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     Returns:
         Inferred type
     """
+    # Sanitize column name
+    sanitized_name = sanitize_column_name(column.name)
+
     # Get non-null values
     non_null_values = [v for v in column.values if v is not None and str(v).strip()]
 
     if not non_null_values:
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="text",
             confidence=ConfidenceLevel.LOW,
             reasoning="All values are null, defaulting to text",
@@ -48,7 +109,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     )
     if all(uuid_pattern.match(v) for v in str_values):
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="uuid",
             confidence=ConfidenceLevel.HIGH,
             reasoning="All values match UUID pattern",
@@ -59,12 +120,16 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     boolean_values = {"true", "false", "t", "f", "yes", "no", "y", "n", "1", "0"}
     if all(v.lower() in boolean_values for v in str_values):
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="boolean",
             confidence=ConfidenceLevel.HIGH,
             reasoning="All values are boolean-like",
             nullable=column.null_percentage > 0,
         )
+
+    # Check for currency/financial columns by name
+    is_currency_column = any(keyword in sanitized_name for keyword in
+                             ['usd', 'price', 'value', 'amount', 'total', 'funding', 'valuation'])
 
     # Integer pattern
     try:
@@ -79,7 +144,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
             pg_type = "bigint"
 
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type=pg_type,
             confidence=ConfidenceLevel.HIGH,
             reasoning=f"All values are integers (range: {min_val} to {max_val})",
@@ -90,12 +155,25 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
 
     # Decimal/numeric pattern
     try:
-        [float(v) for v in str_values]
+        float_values = [float(v) for v in str_values]
+        # Check if any value has decimal places
+        has_decimals = any(v != int(v) for v in float_values if not (v != v))  # Skip NaN
+
+        # Force numeric for currency columns or if decimals detected
+        if is_currency_column or has_decimals:
+            return InferredType(
+                column_name=sanitized_name,
+                pg_type="numeric",
+                confidence=ConfidenceLevel.HIGH,
+                reasoning="Numeric values with decimal precision (or currency column)",
+                nullable=column.null_percentage > 0,
+            )
+
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="numeric",
             confidence=ConfidenceLevel.MEDIUM,
-            reasoning="All values are numeric with decimal points",
+            reasoning="All values are numeric",
             nullable=column.null_percentage > 0,
         )
     except (ValueError, TypeError):
@@ -105,7 +183,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
     if all(date_pattern.match(v) for v in str_values):
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="date",
             confidence=ConfidenceLevel.HIGH,
             reasoning="All values match date pattern (YYYY-MM-DD)",
@@ -118,7 +196,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     )
     if all(timestamp_pattern.match(v) for v in str_values):
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="timestamptz",
             confidence=ConfidenceLevel.HIGH,
             reasoning="All values match timestamp pattern",
@@ -129,7 +207,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
     email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
     if all(email_pattern.match(v) for v in str_values):
         return InferredType(
-            column_name=column.name,
+            column_name=sanitized_name,
             pg_type="text",
             confidence=ConfidenceLevel.MEDIUM,
             reasoning="All values match email pattern",
@@ -146,7 +224,7 @@ def heuristic_type_inference(column: ColumnSample) -> InferredType:
         reasoning = f"String values with max length {max_length}"
 
     return InferredType(
-        column_name=column.name,
+        column_name=sanitized_name,
         pg_type=pg_type,
         confidence=ConfidenceLevel.MEDIUM,
         reasoning=reasoning,
@@ -167,12 +245,15 @@ def build_column_samples(sample: CSVSample) -> list[ColumnSample]:
     column_samples = []
 
     for col_name in sample.headers:
+        # Sanitize column name for PostgreSQL
+        sanitized_name = sanitize_column_name(col_name)
+
         values = [row.get(col_name) for row in sample.rows]
         null_count = sum(1 for v in values if v is None or str(v).strip() == "")
 
         column_samples.append(
             ColumnSample(
-                name=col_name,
+                name=sanitized_name,  # Use sanitized name
                 values=values,
                 null_count=null_count,
                 total_count=len(values),
@@ -259,17 +340,37 @@ async def infer_schema_async(
         )
         columns.append(col_schema)
 
-    # Detect primary key (simple heuristic: look for 'id' column)
+    # Detect primary key candidate (DO NOT add to constraints yet - will be in AFTER LOAD)
+    # Priority: identifier_uuid > uuid > id > *_id columns
     primary_key = None
+    pk_candidates = []
+
     for col in columns:
-        if col.name.lower() in ("id", "uuid", "identifier"):
-            if "PRIMARY KEY" not in col.constraints:
-                col.constraints.append("PRIMARY KEY")
-            primary_key = col.name
-            break
+        col_lower = col.name.lower()
+        if col.pg_type == "uuid":
+            # Prioritize identifier_uuid and similar
+            if "identifier" in col_lower and "uuid" in col_lower:
+                pk_candidates.append((0, col.name))  # Highest priority
+            elif col_lower == "uuid":
+                pk_candidates.append((1, col.name))
+            elif "uuid" in col_lower:
+                pk_candidates.append((2, col.name))
+        elif col_lower == "id":
+            pk_candidates.append((3, col.name))
+        elif col_lower.endswith("_id") and col.pg_type in ("integer", "bigint"):
+            pk_candidates.append((4, col.name))
+
+    # Select the highest priority candidate
+    if pk_candidates:
+        pk_candidates.sort(key=lambda x: x[0])
+        primary_key = pk_candidates[0][1]
+        logger.info(f"Selected primary key: {primary_key}")
+
+    # DO NOT add PRIMARY KEY to column constraints
+    # It will be added in AFTER LOAD section for better performance
 
     # Generate table name from file name
-    table_name = sample.path.stem.lower().replace("-", "_").replace(" ", "_")
+    table_name = sanitize_column_name(sample.path.stem)
 
     schema = TableSchema(
         table_name=table_name,
@@ -336,17 +437,31 @@ def infer_schema_heuristic(sample: CSVSample) -> TableSchema:
         )
         columns.append(col_schema)
 
-    # Detect primary key
+    # Detect primary key candidate (DO NOT add to constraints - will be in AFTER LOAD)
     primary_key = None
+    pk_candidates = []
+
     for col in columns:
-        if col.name.lower() in ("id", "uuid", "identifier"):
-            if "PRIMARY KEY" not in col.constraints:
-                col.constraints.append("PRIMARY KEY")
-            primary_key = col.name
-            break
+        col_lower = col.name.lower()
+        if col.pg_type == "uuid":
+            if "identifier" in col_lower and "uuid" in col_lower:
+                pk_candidates.append((0, col.name))
+            elif col_lower == "uuid":
+                pk_candidates.append((1, col.name))
+            elif "uuid" in col_lower:
+                pk_candidates.append((2, col.name))
+        elif col_lower == "id":
+            pk_candidates.append((3, col.name))
+        elif col_lower.endswith("_id") and col.pg_type in ("integer", "bigint"):
+            pk_candidates.append((4, col.name))
+
+    if pk_candidates:
+        pk_candidates.sort(key=lambda x: x[0])
+        primary_key = pk_candidates[0][1]
+        logger.info(f"Selected primary key: {primary_key}")
 
     # Generate table name
-    table_name = sample.path.stem.lower().replace("-", "_").replace(" ", "_")
+    table_name = sanitize_column_name(sample.path.stem)
 
     return TableSchema(
         table_name=table_name,

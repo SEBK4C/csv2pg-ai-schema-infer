@@ -1,9 +1,25 @@
+-- pgloader configuration for {{ table_name }}
+-- Generated with csv2pg-ai-schema-infer
+-- High-performance import configuration with proper data types
+
 LOAD CSV
     FROM '{{ csv_path }}'
     INTO {{ database_url }}
     TARGET TABLE {{ table_name }}
 
     WITH
+        {%- if workers %}
+        workers = {{ workers }},
+        {%- endif %}
+        {%- if concurrency %}
+        concurrency = {{ concurrency }},
+        {%- endif %}
+        {%- if batch_size %}
+        batch size = {{ batch_size }},
+        {%- endif %}
+        {%- if prefetch_rows %}
+        prefetch rows = {{ prefetch_rows }},
+        {%- endif %}
         truncate,
         skip header = 1,
         fields optionally enclosed by '"',
@@ -11,14 +27,14 @@ LOAD CSV
         fields terminated by '{{ delimiter }}'
 
     SET
-        work_mem to '256MB',
-        maintenance_work_mem to '512MB'
+        work_mem to '{{ work_mem }}',
+        maintenance_work_mem to '{{ maintenance_work_mem }}'
 
     BEFORE LOAD DO
     $$ DROP TABLE IF EXISTS {{ table_name }}; $$,
     $$ CREATE TABLE {{ table_name }} (
         {%- for column in columns %}
-        {{ column.name }} {{ column.pg_type }}{% if not column.nullable %} NOT NULL{% endif %}{% if column.constraints %} {{ column.constraints|join(' ') }}{% endif %}{% if not loop.last %},{% endif %}
+        {{ column.name }} {{ column.pg_type }}{% if not column.nullable %} NOT NULL{% endif %}{% if not loop.last %},{% endif %}
         {%- endfor %}
     ); $$
 
@@ -28,6 +44,14 @@ LOAD CSV
         {%- for column in cast_columns %}
         {{ column.name }} to {{ column.pg_type }}{% if column.cast_rule %} using {{ column.cast_rule }}{% endif %}{% if not loop.last %},{% endif %}
         {%- endfor %}
+    {%- endif %}
+
+    {%- if primary_key %}
+
+    -- Create the primary key AFTER the load is complete for maximum speed
+    AFTER LOAD DO
+    $$ ALTER TABLE {{ table_name }} ADD PRIMARY KEY ({{ primary_key }}); $$,
+    $$ ANALYZE {{ table_name }}; $$
     {%- endif %}
 
 ;

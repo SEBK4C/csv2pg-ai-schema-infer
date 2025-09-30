@@ -5,6 +5,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
+from .config import PerformanceConfig
 from .types import GenerationResult, TableSchema
 from .utils.logger import logger
 
@@ -19,6 +20,7 @@ def generate_pgloader_config(
     csv_path: Path,
     output_dir: Path,
     database_url: str,
+    performance_config: PerformanceConfig | None = None,
     dry_run: bool = False,
 ) -> Path:
     """
@@ -29,6 +31,7 @@ def generate_pgloader_config(
         csv_path: Path to CSV file
         output_dir: Output directory
         database_url: PostgreSQL connection URL
+        performance_config: Performance configuration (auto-detected if None)
         dry_run: If True, don't write file
 
     Returns:
@@ -38,6 +41,15 @@ def generate_pgloader_config(
     templates_dir = get_templates_dir()
     env = Environment(loader=FileSystemLoader(templates_dir))
     template = env.get_template("pgloader.jinja2")
+
+    # Auto-detect performance config if not provided
+    if performance_config is None:
+        file_size_gb = csv_path.stat().st_size / (1024**3) if csv_path.exists() else None
+        performance_config = PerformanceConfig.auto_detect(file_size_gb)
+        logger.info(
+            f"Auto-detected performance config: workers={performance_config.workers}, "
+            f"concurrency={performance_config.concurrency}"
+        )
 
     # Prepare template variables
     cast_columns = [col for col in schema.columns if col.needs_cast]
@@ -52,6 +64,14 @@ def generate_pgloader_config(
         "delimiter": delimiter,
         "columns": schema.columns,
         "cast_columns": cast_columns if cast_columns else None,
+        "primary_key": schema.primary_key,
+        # Performance settings
+        "workers": performance_config.workers,
+        "concurrency": performance_config.concurrency,
+        "batch_size": performance_config.batch_size,
+        "prefetch_rows": performance_config.prefetch_rows,
+        "work_mem": performance_config.work_mem,
+        "maintenance_work_mem": performance_config.maintenance_work_mem,
     }
 
     # Render template
@@ -135,6 +155,7 @@ def generate_all(
     csv_path: Path,
     output_dir: Path,
     database_url: str,
+    performance_config: PerformanceConfig | None = None,
     dry_run: bool = False,
 ) -> GenerationResult:
     """
@@ -145,6 +166,7 @@ def generate_all(
         csv_path: Path to CSV file
         output_dir: Output directory
         database_url: PostgreSQL connection URL
+        performance_config: Performance configuration (auto-detected if None)
         dry_run: If True, don't write files
 
     Returns:
@@ -157,7 +179,7 @@ def generate_all(
 
     # Generate pgloader config
     config_path = generate_pgloader_config(
-        schema, csv_path, output_dir, database_url, dry_run
+        schema, csv_path, output_dir, database_url, performance_config, dry_run
     )
 
     # Define file paths
